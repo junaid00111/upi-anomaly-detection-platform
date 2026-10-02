@@ -299,7 +299,11 @@ UPI project/
 ├── start-dev.ps1
 ├── .gitignore
 └── README.md
-## 📊 Dashboard Screenshots
+```
+
+---
+
+## Dashboard Screenshots
 
 ### Executive Overview
 
@@ -330,3 +334,95 @@ UPI project/
 ![Risk and Anomaly Alert](screenshots/risk-and-anomaly-alert.png)
 
 ![Configure Threshold](screenshots/configure-threshold.png)
+
+---
+
+## Setup
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/junaid00111/upi-anomaly-detection-platform.git
+cd upi-anomaly-detection-platform
+```
+
+### 2. Configure PostgreSQL
+
+Create the required PostgreSQL database and run:
+
+```text
+sql/schema.sql
+```
+
+Create a `.env` file in the project root:
+
+```env
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=upi_anomaly_db
+DB_USER=postgres
+DB_PASSWORD=your_password
+```
+
+### 3. Install Python Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Install Dashboard Dependencies
+
+```bash
+cd dashboard
+npm install
+cd ..
+```
+
+### 5. Start the Application
+
+From the project root:
+
+```powershell
+.\start-dev.ps1
+```
+
+The application runs with:
+
+```text
+FastAPI:  http://localhost:8002
+Dashboard: http://localhost:8081
+```
+
+---
+
+## API Endpoints
+
+The FastAPI backend provides endpoints including:
+
+```text
+/api/summary
+/api/risk-levels
+/api/anomalies
+/api/transactions
+/api/analytics/categories
+/api/analytics/apps
+/api/analytics/daily
+/api/analytics/model-agreement
+/api/analytics/signal-distribution
+/api/analytics/high-risk-categories
+/api/analytics/amount-bands
+/api/analytics/states
+```
+
+---
+
+## Limitations
+
+- The dataset does not contain verified fraud labels.
+- Anomaly detection results should not be interpreted as confirmed fraud.
+- Isolation Forest contamination is a modeling assumption.
+- Time-series anomaly flags identify transactions occurring during anomalous periods.
+- The risk score is a project-defined monitoring score rather than a calibrated fraud probability.
+- The system is intended for anomaly monitoring and investigation prioritization rather than automated fraud confirmation.
+
+---
