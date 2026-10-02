@@ -299,3 +299,34 @@ UPI project/
 ├── start-dev.ps1
 ├── .gitignore
 └── README.md
+## 📊 Dashboard Screenshots
+
+### Executive Overview
+
+![Executive Overview](screenshots/executive-overview-1.png)
+
+![Executive Overview - Analytics](screenshots/executive-overview-2.png)
+
+![Executive Overview - Detection Analysis](screenshots/executive-overview-3.png)
+
+### Analytics
+
+![Analytics](screenshots/analytics.png)
+
+### ML Models
+
+![ML Models](screenshots/ml-models.png)
+
+### Risk & Investigation
+
+![Risk & Investigation](screenshots/risk-investigation.png)
+
+### Transactions
+
+![Transactions](screenshots/transactions.png)
+
+### Additional Dashboard Views
+
+![Risk and Anomaly Alert](screenshots/risk-and-anomaly-alert.png)
+
+![Configure Threshold](screenshots/configure-threshold.png)
