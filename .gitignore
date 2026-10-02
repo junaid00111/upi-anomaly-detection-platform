@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Data artifacts that can be regenerated
+*.log
+
+# Dashboard build/dependency artifacts
+dashboard/node_modules/
+dashboard/dist/
+dashboard/.output/
+dashboard/.wrangler/
+dashboard/.vinxi/
+dashboard/.tanstack/
+
+# Editor/OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

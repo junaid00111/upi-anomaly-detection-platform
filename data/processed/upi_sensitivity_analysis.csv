@@ -1,0 +1,4 @@
+sensitivity,risk_threshold,transactions_flagged,flag_rate_percent
+Low,80,4,0.04
+Medium,60,68,0.68
+High,30,459,4.59
