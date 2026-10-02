@@ -14,7 +14,7 @@ UPI project/
 ├── src/                 # ETL, EDA, statistics, anomaly detection, risk scoring
 ├── api/                 # FastAPI + PostgreSQL API
 ├── dashboard/           # React + TanStack dashboard
-├── .env.example
+├── .env
 ├── requirements.txt
 └── README.md
 ```
@@ -57,6 +57,10 @@ Start the dashboard:
 
 ```bash
 npm run dev
+```
+To start both dashboard and FastAPI at the same time
+```
+.\start-dev.ps1
 ```
 
 The Vite development server may choose another free port if its default port is busy.
