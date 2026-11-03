@@ -9,3 +9,7 @@ psycopg2-binary
 python-dotenv
 fastapi
 uvicorn
+
+# Test dependencies (pytest suite in tests/)
+pytest>=7.0
+httpx>=0.24

@@ -1,6 +1,6 @@
 import type { MonitoringSnapshot, RiskLevel, DemoTransaction } from "./monitoring-data";
 
-const API_BASE_URL = import.meta.env["VITE_API_BASE_URL"] ?? "http://localhost:8000";
+const API_BASE_URL = import.meta.env["VITE_API_BASE_URL"] ?? "http://localhost:8002";
 
 async function fetchApi<T>(endpoint: string): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${endpoint}`);
@@ -382,13 +382,13 @@ function buildSnapshot(
 
     dailyVolume,
 
-weeklyVolume: [],
+    weeklyVolume: [],
 
-monthlyVolume: [],
+    monthlyVolume: [],
 
-amountBands,
+    amountBands,
 
-stateAnalysis: states,
+    stateAnalysis: states,
 
     // REAL
     signalDistribution,
@@ -406,37 +406,37 @@ stateAnalysis: states,
 
 export const apiMonitoringDataService = {
   async getSnapshot(): Promise<MonitoringSnapshot> {
-  const [
-  summary,
-  risks,
-  anomalies,
-  categories,
-  apps,
-  daily,
-  amountBands,
-  states,
-  transactions,
+    const [
+      summary,
+      risks,
+      anomalies,
+      categories,
+      apps,
+      daily,
+      amountBands,
+      states,
+      transactions,
 
       // NEW
       modelAgreement,
       signalDistribution,
       highRiskCategories,
-] = await Promise.all([
-  getProjectMetrics(),
-  getRiskLevels(),
-  getAnomalyMethods(),
-  getCategories(),
-  getApps(),
-  getDailyData(),
-  getAmountBands(),
-  getStates(),
-  getTransactionSnapshot(),
+    ] = await Promise.all([
+      getProjectMetrics(),
+      getRiskLevels(),
+      getAnomalyMethods(),
+      getCategories(),
+      getApps(),
+      getDailyData(),
+      getAmountBands(),
+      getStates(),
+      getTransactionSnapshot(),
 
-  // NEW
-  getModelAgreement(),
-  getSignalDistribution(),
-  getHighRiskCategories(),
-]);
+      // NEW
+      getModelAgreement(),
+      getSignalDistribution(),
+      getHighRiskCategories(),
+    ]);
 
     return buildSnapshot(
       summary,

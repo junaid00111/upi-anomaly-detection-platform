@@ -90,9 +90,7 @@ function AppSidebar() {
       <SidebarFooter className="p-3">
         <div className="flex items-center gap-2 rounded-md border border-sidebar-border bg-sidebar-accent/50 p-2 text-xs">
           <Database className="size-4 shrink-0 text-sidebar-primary" />
-          {!collapsed && (
-            <span className="text-sidebar-foreground/70">Data · Jan–Jun 2024</span>
-          )}
+          {!collapsed && <span className="text-sidebar-foreground/70">Data · Jan–Jun 2024</span>}
         </div>
       </SidebarFooter>
       <SidebarRail />
