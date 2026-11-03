@@ -16,11 +16,6 @@ The system combines multiple anomaly detection approaches to identify unusual tr
 
 ---
 
-## Architecture & System Design
-
-![System Overview](docs/architecture_overview.png)
-
-![Data Flow & Pipeline](docs/data_flow_pipeline.png)
 
 ---
 
