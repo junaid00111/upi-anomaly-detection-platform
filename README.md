@@ -16,6 +16,18 @@ The system combines multiple anomaly detection approaches to identify unusual tr
 
 ---
 
+## Architecture & System Design
+
+See **[System Design & Architecture (docs/architecture.md)](docs/architecture.md)** for the full technical architecture, including:
+
+- Layered architecture diagram (presentation → application → analytics → processing)
+- End-to-end data flow and the 10-stage pipeline inventory
+- Component breakdown (generator, pipeline, PostgreSQL, FastAPI, dashboard, Power BI)
+- Deployment/runtime model and environment variables
+- Technology stack table and future roadmap
+
+---
+
 ## Key Features
 
 - Data extraction and transformation pipeline
