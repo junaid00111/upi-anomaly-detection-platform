@@ -56,9 +56,7 @@ function AppSidebar() {
     <Sidebar collapsible="icon" className="border-sidebar-border">
       <SidebarHeader className="h-20 justify-center px-4">
         <div className="flex min-w-0 items-center gap-3">
-          <div className="grid size-10 shrink-0 place-items-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground shadow-lg">
-            <Activity className="size-5" />
-          </div>
+          <img src="/logo.svg" alt="UPI Risk Monitor" className="size-10 shrink-0 rounded-lg" />
           {!collapsed && (
             <div className="min-w-0">
               <div className="truncate font-display text-sm font-bold text-sidebar-foreground">
