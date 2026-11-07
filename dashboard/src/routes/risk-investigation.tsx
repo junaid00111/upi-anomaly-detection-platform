@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { AlertTriangle, ScanSearch, ShieldAlert, Siren } from "lucide-react";
 import { DemoNotice, MetricCard, PageHeader, Panel } from "@/components/dashboard/primitives";
 import { TransactionFilters, TransactionTable } from "@/components/dashboard/transaction-table";
 import { getInvestigations } from "@/lib/monitoring-api";
+import { monitoringQueryOptions } from "@/lib/monitoring-query";
 
 export const Route = createFileRoute("/risk-investigation")({
   head: () => ({
@@ -23,6 +24,7 @@ export const Route = createFileRoute("/risk-investigation")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
+  loader: ({ context }) => context.queryClient.ensureQueryData(monitoringQueryOptions),
   component: Investigation,
   errorComponent: () => <div role="alert">Investigation data could not be loaded.</div>,
   notFoundComponent: () => <div>No investigation candidates found.</div>,
@@ -31,6 +33,7 @@ export const Route = createFileRoute("/risk-investigation")({
 function Investigation() {
   const [risk, setRisk] = useState("High / Critical");
   const [query, setQuery] = useState("");
+  const { data: snapshot } = useSuspenseQuery(monitoringQueryOptions);
   const {
     data: transactions = [],
     isLoading,
@@ -65,27 +68,27 @@ function Investigation() {
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard
           label="Investigation required"
-          value="68"
-          note="64 High + 4 Critical candidates"
+          value={snapshot.projectMetrics.investigationRequired.toLocaleString("en-IN")}
+          note={`${snapshot.projectMetrics.highRisk} High + ${snapshot.projectMetrics.criticalRisk} Critical candidates`}
           icon={ScanSearch}
         />
         <MetricCard
           label="High risk"
-          value="64"
+          value={snapshot.projectMetrics.highRisk.toLocaleString("en-IN")}
           note="High-priority anomaly candidates"
           icon={ShieldAlert}
           tone="warning"
         />
         <MetricCard
           label="Critical risk"
-          value="4"
+          value={snapshot.projectMetrics.criticalRisk.toLocaleString("en-IN")}
           note="Highest-priority anomaly candidates"
           icon={Siren}
           tone="critical"
         />
         <MetricCard
           label="Average risk score"
-          value="5.03"
+          value={snapshot.projectMetrics.averageRiskScore.toFixed(2)}
           note="Project average; not a fraud probability"
           icon={AlertTriangle}
         />

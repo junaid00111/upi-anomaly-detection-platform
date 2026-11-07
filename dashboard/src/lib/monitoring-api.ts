@@ -1,9 +1,9 @@
 import type { MonitoringSnapshot, RiskLevel, DemoTransaction } from "./monitoring-data";
 
-const API_BASE_URL = import.meta.env["VITE_API_BASE_URL"] ?? "http://localhost:8002";
+export const API_BASE_URL = import.meta.env["VITE_API_BASE_URL"] ?? "http://localhost:8002";
 
-async function fetchApi<T>(endpoint: string): Promise<T> {
-  const response = await fetch(`${API_BASE_URL}${endpoint}`);
+async function fetchApi<T>(endpoint: string, init?: RequestInit): Promise<T> {
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, { headers: { "Content-Type": "application/json" }, ...init });
 
   if (!response.ok) {
     throw new Error(`API request failed: ${response.status} ${response.statusText}`);
@@ -20,6 +20,7 @@ type SummaryResponse = {
   total_transactions: number;
   total_value: number;
   average_amount: number;
+  average_risk_score: number;
   anomalous_transactions: number;
   anomaly_rate: number;
   investigation_required: number;
@@ -68,6 +69,12 @@ type TransactionResponse = {
   risk_level: RiskLevel;
   risk_signal_count: number;
   anomaly_type: string;
+  iqr_anomaly?: number;
+  time_series_anomaly?: number;
+  isolation_forest_new?: number;
+  lof_anomaly?: number;
+  one_class_svm_anomaly?: number;
+  ml_model_agreement?: number;
   category: string;
   location_state: string;
   upi_app: string;
@@ -201,6 +208,13 @@ export async function getTransactions(options: TransactionQuery = {}): Promise<{
       riskLevel: item.risk_level,
       signalCount: Number(item.risk_signal_count),
       anomalyType: item.anomaly_type,
+      signals: [
+        ["IQR amount rule", item.iqr_anomaly],
+        ["Time-series deviation", item.time_series_anomaly],
+        ["Isolation Forest", item.isolation_forest_new],
+        ["Local Outlier Factor", item.lof_anomaly],
+        ["One-Class SVM", item.one_class_svm_anomaly],
+      ].map(([name, value]) => ({ name: String(name), triggered: Number(value ?? 0) === 1 })),
       category: item.category,
       state: item.location_state,
       app: item.upi_app,
@@ -229,6 +243,12 @@ async function getHighRiskCategories() {
 // INVESTIGATION QUEUE
 // ------------------------------------------------------------
 
+export async function getAlertCount(): Promise<number> { return (await fetchApi<{ count: number }>("/api/alerts/count")).count; }
+export async function getDataQuality() { return fetchApi<{ rows: number; unique_ids: number; duplicate_ids: number; invalid_amounts: number; invalid_timestamps: number; invalid_statuses: number; invalid_scores: number; quality_percent: number }>("/api/data-quality"); }
+export async function getThresholds() { return fetchApi<{ low_threshold: number; medium_threshold: number; high_threshold: number }>("/api/settings/thresholds"); }
+export async function saveThresholds(value: { low_threshold: number; medium_threshold: number; high_threshold: number }) { return fetchApi("/api/settings/thresholds", { method: "PUT", body: JSON.stringify(value) }); }
+export async function updateInvestigation(transactionId: string, value: { status: string; assignee?: string; notes?: string; resolution_reason?: string }) { return fetchApi(`/api/investigations/${encodeURIComponent(transactionId)}`, { method: "PATCH", body: JSON.stringify(value) }); }
+
 export async function getInvestigations(limit = 100): Promise<DemoTransaction[]> {
   const response = await fetchApi<{
     count: number;
@@ -242,6 +262,13 @@ export async function getInvestigations(limit = 100): Promise<DemoTransaction[]>
     riskLevel: item.risk_level,
     signalCount: Number(item.risk_signal_count),
     anomalyType: item.anomaly_type,
+    signals: [
+      ["IQR amount rule", item.iqr_anomaly],
+      ["Time-series deviation", item.time_series_anomaly],
+      ["Isolation Forest", item.isolation_forest_new],
+      ["Local Outlier Factor", item.lof_anomaly],
+      ["One-Class SVM", item.one_class_svm_anomaly],
+    ].map(([name, value]) => ({ name: String(name), triggered: Number(value ?? 0) === 1 })),
     category: item.category,
     state: item.location_state,
     app: item.upi_app,
@@ -343,6 +370,13 @@ function buildSnapshot(
     riskLevel: item.risk_level,
     signalCount: item.risk_signal_count,
     anomalyType: item.anomaly_type,
+    signals: [
+      ["IQR amount rule", item.iqr_anomaly],
+      ["Time-series deviation", item.time_series_anomaly],
+      ["Isolation Forest", item.isolation_forest_new],
+      ["Local Outlier Factor", item.lof_anomaly],
+      ["One-Class SVM", item.one_class_svm_anomaly],
+    ].map(([name, value]) => ({ name: String(name), triggered: Number(value ?? 0) === 1 })),
     category: item.category,
     state: item.location_state,
     app: item.upi_app,
@@ -366,7 +400,7 @@ function buildSnapshot(
 
       criticalRisk: riskLevels.find((r) => r.name === "Critical")?.value ?? 0,
 
-      averageRiskScore: 0,
+      averageRiskScore: summary.average_risk_score,
     },
 
     categoryRates,

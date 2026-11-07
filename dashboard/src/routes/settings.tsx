@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { getThresholds, saveThresholds } from "@/lib/monitoring-api";
 import { SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -24,10 +26,9 @@ export const Route = createFileRoute("/settings")({
   component: Settings,
 });
 function Settings() {
-  const [low, setLow] = useState([80]),
-    [medium, setMedium] = useState([60]),
-    [high, setHigh] = useState([30]),
-    [saved, setSaved] = useState(false);
+  const { data: stored } = useQuery({ queryKey: ["thresholds"], queryFn: getThresholds });
+  const [low, setLow] = useState([30]), [medium, setMedium] = useState([60]), [high, setHigh] = useState([80]), [saved, setSaved] = useState(false);
+  const mutation = useMutation({ mutationFn: saveThresholds, onSuccess: () => setSaved(true) });
   return (
     <>
       <PageHeader
@@ -67,7 +68,22 @@ function Settings() {
             ))}
           </div>
           <div className="mt-7 flex items-center gap-3">
-            <Button onClick={() => setSaved(true)}>Save thresholds</Button>
+            <Button
+              disabled={
+                (low[0] ?? 0) >= (medium[0] ?? 0) ||
+                (medium[0] ?? 0) >= (high[0] ?? 0) ||
+                mutation.isPending
+              }
+              onClick={() =>
+                mutation.mutate({
+                  low_threshold: low[0] ?? 30,
+                  medium_threshold: medium[0] ?? 60,
+                  high_threshold: high[0] ?? 80,
+                })
+              }
+            >
+              Save thresholds
+            </Button>
             {saved && (
               <span className="text-xs font-semibold text-success">Saved for this session</span>
             )}

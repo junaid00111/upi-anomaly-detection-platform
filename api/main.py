@@ -1,5 +1,6 @@
 import os
-from typing import Optional
+from typing import Optional, Literal
+from pydantic import BaseModel, Field
 
 import psycopg2
 from psycopg2.extras import RealDictCursor
@@ -14,6 +15,17 @@ app = FastAPI(
     description="API for UPI transaction anomaly and risk analytics",
     version="1.0.0",
 )
+
+class ThresholdSettings(BaseModel):
+    low_threshold: float = Field(ge=0, le=100)
+    medium_threshold: float = Field(ge=0, le=100)
+    high_threshold: float = Field(ge=0, le=100)
+
+class InvestigationUpdate(BaseModel):
+    status: Literal["New", "In Review", "Escalated", "Resolved", "Dismissed"]
+    assignee: Optional[str] = Field(default=None, max_length=120)
+    notes: Optional[str] = Field(default=None, max_length=5000)
+    resolution_reason: Optional[str] = Field(default=None, max_length=255)
 
 # ------------------------------------------------------------
 # CORS
@@ -97,6 +109,76 @@ def health_check():
 # EXECUTIVE SUMMARY
 # ------------------------------------------------------------
 
+@app.get("/api/alerts/count")
+def get_alert_count():
+    connection = get_connection()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT COUNT(*) FROM upi_transactions WHERE risk_level IN ('High', 'Critical')")
+            return {"count": cursor.fetchone()[0]}
+    finally:
+        connection.close()
+
+@app.get("/api/data-quality")
+def get_data_quality():
+    connection = get_connection()
+    try:
+        with connection.cursor(cursor_factory=RealDictCursor) as cursor:
+            cursor.execute("""
+                SELECT COUNT(*) AS rows, COUNT(DISTINCT transaction_id) AS unique_ids,
+                COUNT(*) FILTER (WHERE amount_inr IS NULL OR amount_inr <= 0) AS invalid_amounts,
+                COUNT(*) FILTER (WHERE timestamp IS NULL) AS invalid_timestamps,
+                COUNT(*) FILTER (WHERE status IS NULL OR status NOT IN ('SUCCESS','FAILED','PENDING')) AS invalid_statuses,
+                COUNT(*) FILTER (WHERE risk_score IS NULL OR risk_score < 0 OR risk_score > 100) AS invalid_scores
+                FROM upi_transactions
+            """)
+            row = dict(cursor.fetchone())
+            total = int(row["rows"] or 0)
+            duplicate_count = total - int(row["unique_ids"] or 0)
+            defects = duplicate_count + sum(int(row[k] or 0) for k in ("invalid_amounts", "invalid_timestamps", "invalid_statuses", "invalid_scores"))
+            row.update({"duplicate_ids": duplicate_count, "quality_percent": round(max(0, 100 * (1 - defects / max(total, 1))), 2)})
+            return row
+    finally:
+        connection.close()
+
+@app.get("/api/settings/thresholds")
+def get_thresholds():
+    connection = get_connection()
+    try:
+        with connection.cursor(cursor_factory=RealDictCursor) as cursor:
+            cursor.execute("SELECT low_threshold, medium_threshold, high_threshold FROM monitoring_settings WHERE id = 1")
+            return dict(cursor.fetchone())
+    finally:
+        connection.close()
+
+@app.put("/api/settings/thresholds")
+def save_thresholds(settings: ThresholdSettings):
+    if not settings.low_threshold < settings.medium_threshold < settings.high_threshold:
+        raise HTTPException(status_code=422, detail="Thresholds must be in ascending order")
+    connection = get_connection()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""UPDATE monitoring_settings SET low_threshold=%s, medium_threshold=%s, high_threshold=%s, updated_at=CURRENT_TIMESTAMP WHERE id=1""", (settings.low_threshold, settings.medium_threshold, settings.high_threshold))
+        connection.commit()
+        return settings.model_dump()
+    finally:
+        connection.close()
+
+@app.patch("/api/investigations/{transaction_id}")
+def update_investigation(transaction_id: str, update: InvestigationUpdate):
+    connection = get_connection()
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1 FROM upi_transactions WHERE transaction_id=%s", (transaction_id,))
+            if cursor.fetchone() is None:
+                raise HTTPException(status_code=404, detail="Transaction not found")
+            cursor.execute("""INSERT INTO investigation_cases(transaction_id,status,assignee,notes,resolution_reason) VALUES(%s,%s,%s,%s,%s) ON CONFLICT(transaction_id) DO UPDATE SET status=EXCLUDED.status, assignee=EXCLUDED.assignee, notes=EXCLUDED.notes, resolution_reason=EXCLUDED.resolution_reason, updated_at=CURRENT_TIMESTAMP""", (transaction_id, update.status, update.assignee, update.notes, update.resolution_reason))
+            cursor.execute("INSERT INTO investigation_events(transaction_id,event_type,details,actor) VALUES(%s,%s,%s,%s)", (transaction_id, update.status, update.notes or update.resolution_reason, update.assignee))
+        connection.commit()
+        return {"transaction_id": transaction_id, **update.model_dump()}
+    finally:
+        connection.close()
+
 @app.get("/api/summary")
 def get_summary():
     connection = None
@@ -111,6 +193,7 @@ def get_summary():
                 COUNT(*) AS total_transactions,
                 COALESCE(SUM(amount_inr), 0) AS total_value,
                 COALESCE(AVG(amount_inr), 0) AS average_amount,
+                COALESCE(AVG(risk_score), 0) AS average_risk_score,
 
                 COUNT(*) FILTER (
                     WHERE anomaly_count > 0
@@ -137,6 +220,7 @@ def get_summary():
             "total_transactions": int(result["total_transactions"]),
             "total_value": float(result["total_value"]),
             "average_amount": float(result["average_amount"]),
+            "average_risk_score": float(result["average_risk_score"]),
             "anomalous_transactions": int(result["anomalous_transactions"]),
             "anomaly_rate": float(result["anomaly_rate"]),
             "investigation_required": int(result["investigation_required"]),
@@ -251,7 +335,8 @@ def get_transactions(
 
                 anomaly_count,
                 anomaly_type,
-
+                iqr_anomaly,
+                time_series_anomaly,
                 isolation_forest_new,
                 lof_anomaly,
                 one_class_svm_anomaly,
@@ -684,6 +769,12 @@ def get_investigations(
                 risk_level,
                 risk_signal_count,
                 anomaly_type,
+                iqr_anomaly,
+                time_series_anomaly,
+                isolation_forest_new,
+                lof_anomaly,
+                one_class_svm_anomaly,
+                ml_model_agreement,
                 transaction_type,
                 category,
                 upi_app,

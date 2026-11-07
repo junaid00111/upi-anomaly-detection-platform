@@ -47,3 +47,31 @@ CREATE INDEX IF NOT EXISTS idx_upi_app
 
 CREATE INDEX IF NOT EXISTS idx_upi_state
     ON upi_transactions (location_state);
+
+-- Analyst workflow tables. Safe to run repeatedly during development.
+CREATE TABLE IF NOT EXISTS investigation_cases (
+    transaction_id VARCHAR(50) PRIMARY KEY REFERENCES upi_transactions(transaction_id) ON DELETE CASCADE,
+    status VARCHAR(30) NOT NULL DEFAULT 'New',
+    assignee VARCHAR(120),
+    notes TEXT,
+    resolution_reason VARCHAR(255),
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS investigation_events (
+    id BIGSERIAL PRIMARY KEY,
+    transaction_id VARCHAR(50) NOT NULL REFERENCES upi_transactions(transaction_id) ON DELETE CASCADE,
+    event_type VARCHAR(40) NOT NULL,
+    details TEXT,
+    actor VARCHAR(120),
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS monitoring_settings (
+    id INTEGER PRIMARY KEY CHECK (id = 1),
+    low_threshold NUMERIC(6,2) NOT NULL DEFAULT 30,
+    medium_threshold NUMERIC(6,2) NOT NULL DEFAULT 60,
+    high_threshold NUMERIC(6,2) NOT NULL DEFAULT 80,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+INSERT INTO monitoring_settings (id) VALUES (1) ON CONFLICT (id) DO NOTHING;

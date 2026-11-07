@@ -6,6 +6,7 @@ export type DemoTransaction = {
   riskLevel: RiskLevel;
   signalCount: number;
   anomalyType: string;
+  signals?: { name: string; triggered: boolean }[];
   category: string;
   state: string;
   app: string;

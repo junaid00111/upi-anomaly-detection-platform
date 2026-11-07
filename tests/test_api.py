@@ -123,6 +123,7 @@ def test_summary_endpoint(fake_db):
             "total_transactions": 10000,
             "total_value": 37850000.0,
             "average_amount": 3785.0,
+            "average_risk_score": 5.03,
             "anomalous_transactions": 1886,
             "anomaly_rate": 18.86,
             "investigation_required": 68,
@@ -134,6 +135,7 @@ def test_summary_endpoint(fake_db):
     body = response.json()
     assert body["total_transactions"] == 10000
     assert body["total_value"] == 37850000.0
+    assert body["average_risk_score"] == 5.03
     assert body["anomaly_rate"] == 18.86
     assert body["investigation_required"] == 68
 
@@ -143,6 +145,7 @@ def test_summary_endpoint_includes_all_keys(fake_db):
         "total_transactions": 1,
         "total_value": 10.0,
         "average_amount": 10.0,
+        "average_risk_score": 5.0,
         "anomalous_transactions": 1,
         "anomaly_rate": 100.0,
         "investigation_required": 1,

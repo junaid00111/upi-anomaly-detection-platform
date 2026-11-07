@@ -6,7 +6,9 @@ import {
   ChartNoAxesCombined,
   CircleGauge,
   Database,
+  FileSearch,
   ListFilter,
+  Microscope,
   Search,
   Settings,
   ShieldCheck,
@@ -31,12 +33,17 @@ import {
 } from "@/components/ui/sidebar";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { ReactNode } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getAlertCount } from "@/lib/monitoring-api";
 
 const nav = [
   { label: "Executive Overview", to: "/", icon: CircleGauge },
   { label: "Transactions", to: "/transactions", icon: WalletCards },
   { label: "Analytics", to: "/analytics", icon: ChartNoAxesCombined },
   { label: "ML Models", to: "/ml-models", icon: BrainCircuit },
+  { label: "Model Evaluation", to: "/model-evaluation", icon: Microscope },
+  { label: "Data Quality", to: "/data-quality", icon: FileSearch },
+  { label: "Methodology", to: "/methodology", icon: ListFilter },
   { label: "Risk & Investigation", to: "/risk-investigation", icon: ShieldCheck },
   { label: "Alerts", to: "/alerts", icon: BellRing },
   { label: "Settings", to: "/settings", icon: Settings },
@@ -98,6 +105,7 @@ function AppSidebar() {
   );
 }
 export function AppShell({ children }: { children: ReactNode }) {
+  const { data: alertCount = 0 } = useQuery({ queryKey: ["alert-count"], queryFn: getAlertCount, staleTime: 30_000 });
   return (
     <SidebarProvider>
       <div className="app-shell flex min-h-svh w-full">
@@ -128,8 +136,8 @@ export function AppShell({ children }: { children: ReactNode }) {
                     className="relative grid size-9 place-items-center rounded-md border bg-background text-foreground hover:bg-accent"
                   >
                     <BellRing className="size-4" />
-                    <span className="absolute -right-1 -top-1 grid size-4 place-items-center rounded-full bg-critical text-[9px] text-primary-foreground">
-                      4
+                    <span className="absolute -right-1 -top-1 grid size-4 place-items-center rounded-full bg-critical text-[9px] text-primary-foreground" aria-label={`${alertCount} open alerts`}>
+                      {alertCount}
                     </span>
                   </Link>
                 </TooltipTrigger>

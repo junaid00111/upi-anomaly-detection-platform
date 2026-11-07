@@ -12,7 +12,10 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AlertsRouteImport } from './routes/alerts'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
+import { Route as DataQualityRouteImport } from './routes/data-quality'
+import { Route as MethodologyRouteImport } from './routes/methodology'
 import { Route as MlModelsRouteImport } from './routes/ml-models'
+import { Route as ModelEvaluationRouteImport } from './routes/model-evaluation'
 import { Route as RiskInvestigationRouteImport } from './routes/risk-investigation'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as TransactionsRouteImport } from './routes/transactions'
@@ -32,9 +35,24 @@ const AnalyticsRoute = AnalyticsRouteImport.update({
   path: '/analytics',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DataQualityRoute = DataQualityRouteImport.update({
+  id: '/data-quality',
+  path: '/data-quality',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MethodologyRoute = MethodologyRouteImport.update({
+  id: '/methodology',
+  path: '/methodology',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MlModelsRoute = MlModelsRouteImport.update({
   id: '/ml-models',
   path: '/ml-models',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ModelEvaluationRoute = ModelEvaluationRouteImport.update({
+  id: '/model-evaluation',
+  path: '/model-evaluation',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RiskInvestigationRoute = RiskInvestigationRouteImport.update({
@@ -57,7 +75,10 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/alerts': typeof AlertsRoute
   '/analytics': typeof AnalyticsRoute
+  '/data-quality': typeof DataQualityRoute
+  '/methodology': typeof MethodologyRoute
   '/ml-models': typeof MlModelsRoute
+  '/model-evaluation': typeof ModelEvaluationRoute
   '/risk-investigation': typeof RiskInvestigationRoute
   '/settings': typeof SettingsRoute
   '/transactions': typeof TransactionsRoute
@@ -66,7 +87,10 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/alerts': typeof AlertsRoute
   '/analytics': typeof AnalyticsRoute
+  '/data-quality': typeof DataQualityRoute
+  '/methodology': typeof MethodologyRoute
   '/ml-models': typeof MlModelsRoute
+  '/model-evaluation': typeof ModelEvaluationRoute
   '/risk-investigation': typeof RiskInvestigationRoute
   '/settings': typeof SettingsRoute
   '/transactions': typeof TransactionsRoute
@@ -76,7 +100,10 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/alerts': typeof AlertsRoute
   '/analytics': typeof AnalyticsRoute
+  '/data-quality': typeof DataQualityRoute
+  '/methodology': typeof MethodologyRoute
   '/ml-models': typeof MlModelsRoute
+  '/model-evaluation': typeof ModelEvaluationRoute
   '/risk-investigation': typeof RiskInvestigationRoute
   '/settings': typeof SettingsRoute
   '/transactions': typeof TransactionsRoute
@@ -87,7 +114,10 @@ export interface FileRouteTypes {
     | '/'
     | '/alerts'
     | '/analytics'
+    | '/data-quality'
+    | '/methodology'
     | '/ml-models'
+    | '/model-evaluation'
     | '/risk-investigation'
     | '/settings'
     | '/transactions'
@@ -96,7 +126,10 @@ export interface FileRouteTypes {
     | '/'
     | '/alerts'
     | '/analytics'
+    | '/data-quality'
+    | '/methodology'
     | '/ml-models'
+    | '/model-evaluation'
     | '/risk-investigation'
     | '/settings'
     | '/transactions'
@@ -105,7 +138,10 @@ export interface FileRouteTypes {
     | '/'
     | '/alerts'
     | '/analytics'
+    | '/data-quality'
+    | '/methodology'
     | '/ml-models'
+    | '/model-evaluation'
     | '/risk-investigation'
     | '/settings'
     | '/transactions'
@@ -115,7 +151,10 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AlertsRoute: typeof AlertsRoute
   AnalyticsRoute: typeof AnalyticsRoute
+  DataQualityRoute: typeof DataQualityRoute
+  MethodologyRoute: typeof MethodologyRoute
   MlModelsRoute: typeof MlModelsRoute
+  ModelEvaluationRoute: typeof ModelEvaluationRoute
   RiskInvestigationRoute: typeof RiskInvestigationRoute
   SettingsRoute: typeof SettingsRoute
   TransactionsRoute: typeof TransactionsRoute
@@ -144,11 +183,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AnalyticsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/data-quality': {
+      id: '/data-quality'
+      path: '/data-quality'
+      fullPath: '/data-quality'
+      preLoaderRoute: typeof DataQualityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/methodology': {
+      id: '/methodology'
+      path: '/methodology'
+      fullPath: '/methodology'
+      preLoaderRoute: typeof MethodologyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/ml-models': {
       id: '/ml-models'
       path: '/ml-models'
       fullPath: '/ml-models'
       preLoaderRoute: typeof MlModelsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/model-evaluation': {
+      id: '/model-evaluation'
+      path: '/model-evaluation'
+      fullPath: '/model-evaluation'
+      preLoaderRoute: typeof ModelEvaluationRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/risk-investigation': {
@@ -179,7 +239,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AlertsRoute: AlertsRoute,
   AnalyticsRoute: AnalyticsRoute,
+  DataQualityRoute: DataQualityRoute,
+  MethodologyRoute: MethodologyRoute,
   MlModelsRoute: MlModelsRoute,
+  ModelEvaluationRoute: ModelEvaluationRoute,
   RiskInvestigationRoute: RiskInvestigationRoute,
   SettingsRoute: SettingsRoute,
   TransactionsRoute: TransactionsRoute,

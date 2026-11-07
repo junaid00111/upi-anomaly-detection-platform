@@ -35,36 +35,15 @@ function Models() {
         description="Compare detection output volumes and agreement. Counts describe anomaly flags, not model accuracy or fraud probability."
       />
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
-        <MetricCard
-          label="IQR anomalies"
-          value="1,004"
-          note="Threshold-based amount outliers"
-          icon={Scale}
-        />
-        <MetricCard
-          label="Isolation Forest"
-          value="500"
-          note="Original and new runs each flag 500"
-          icon={BrainCircuit}
-        />
-        <MetricCard
-          label="Time-series anomalies"
-          value="659"
-          note="Temporal deviation signals"
-          icon={ScanLine}
-        />
-        <MetricCard
-          label="LOF anomalies"
-          value="500"
-          note="Local density outliers"
-          icon={Waypoints}
-        />
-        <MetricCard
-          label="One-Class SVM"
-          value="504"
-          note="Boundary-based anomaly flags"
-          icon={Layers3}
-        />
+        {[
+          ["IQR anomalies", "IQR", "Threshold-based amount outliers", Scale],
+          ["Isolation Forest", "Isolation Forest", "Tree-based isolation outliers", BrainCircuit],
+          ["Time-series anomalies", "Time Series", "Temporal deviation signals", ScanLine],
+          ["LOF anomalies", "LOF", "Local density outliers", Waypoints],
+          ["One-Class SVM", "One-Class SVM", "Boundary-based anomaly flags", Layers3],
+        ].map(([label, method, note, Icon]) => (
+          <MetricCard key={String(label)} label={String(label)} value={(data.detectionMethods.find((item) => item.name === method)?.count ?? 0).toLocaleString("en-IN")} note={String(note)} icon={Icon as typeof Scale} />
+        ))}
       </div>
       <div className="mt-4 grid gap-4 xl:grid-cols-3">
         <Panel

@@ -276,9 +276,9 @@ export function TransactionTable({
       <Sheet open={Boolean(selected)} onOpenChange={(open) => !open && setSelected(undefined)}>
         <SheetContent className="w-full overflow-y-auto sm:max-w-md">
           <SheetHeader>
-            <SheetTitle>Transaction detail</SheetTitle>
+            <SheetTitle>Transaction investigation</SheetTitle>
             <SheetDescription>
-              Illustrative sample record — not a confirmed fraud determination.
+              Reviewable anomaly candidate — not a confirmed fraud determination.
             </SheetDescription>
           </SheetHeader>
           {selected && (
@@ -312,9 +312,19 @@ export function TransactionTable({
                   <span className="text-right font-semibold">{v}</span>
                 </div>
               ))}
+              <div>
+                <h3 className="mb-2 text-sm font-semibold">Signal explanation</h3>
+                <div className="space-y-2 rounded-md border bg-muted/30 p-3 text-xs">
+                  {(selected.signals ?? [{ name: selected.anomalyType, triggered: true }]).map((signal) => (
+                    <div key={signal.name} className="flex items-center justify-between">
+                      <span>{signal.name}</span>
+                      <span className={signal.triggered ? "font-semibold text-warning" : "text-muted-foreground"}>{signal.triggered ? "Triggered" : "Not triggered"}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
               <div className="rounded-md border border-warning/35 bg-warning/10 p-3 text-xs">
-                This sample indicates unusual behavior for review. It is not a confirmed fraud label
-                or calibrated probability.
+                Signals indicate unusual behavior for review. They are not a confirmed fraud label or calibrated probability.
               </div>
             </div>
           )}

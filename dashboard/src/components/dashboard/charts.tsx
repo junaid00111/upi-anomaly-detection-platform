@@ -16,7 +16,7 @@ import {
 const tooltipStyle = {
   borderRadius: 8,
   border: "1px solid var(--border)",
-  background: "var(--popover)",
+  background: "#ffffff",
   color: "var(--popover-foreground)",
   boxShadow: "0 12px 28px oklch(.18 .065 280 / 12%)",
 };

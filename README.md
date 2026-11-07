@@ -23,6 +23,10 @@ The system combines multiple anomaly detection approaches to identify unusual tr
 
 - Data extraction and transformation pipeline
 - Data quality checks and duplicate handling
+- Live data-quality score with invalid-record monitoring
+- Persistent investigation cases with status, assignee, notes, and audit events
+- Persistent threshold configuration with validation
+- Dynamic alert count from PostgreSQL
 - Exploratory Data Analysis (EDA)
 - IQR-based amount anomaly detection
 - Isolation Forest anomaly detection
@@ -37,6 +41,9 @@ The system combines multiple anomaly detection approaches to identify unusual tr
 - Interactive React/TanStack dashboard
 - Transaction search and filtering
 - Risk and investigation queue
+- Model-by-model signal explanations in transaction details
+- Model evaluation and methodology views
+- Data-quality and API health monitoring
 - Model agreement analysis
 - Anomaly signal distribution
 - State, category, UPI app, and amount analysis
@@ -231,11 +238,23 @@ Also includes model agreement analysis and methodology notes.
 
 Provides:
 
+- Persistent investigation workflow with New, In Review, Escalated, Resolved, and Dismissed statuses
+- Analyst assignment, notes, resolution reasons, and audit events
+- Model-by-model signal explanation for each reviewable candidate
+
 - Investigation queue
 - High-risk transactions
 - Critical-risk transactions
 - Risk score distribution
 - High-risk categories
+
+### Data Quality
+
+Provides live PostgreSQL quality metrics for row count, duplicate IDs, invalid amounts, timestamps, statuses, risk scores, and an overall quality percentage.
+
+### Settings
+
+Provides persistent, validated monitoring thresholds. Thresholds are project-defined review controls, not calibrated fraud probabilities.
 
 ### Transactions
 
@@ -393,7 +412,7 @@ The application runs with:
 
 ```text
 FastAPI:  http://localhost:8002
-Dashboard: http://localhost:8081
+Dashboard: http://localhost:8080
 ```
 
 ---
@@ -415,6 +434,10 @@ The FastAPI backend provides endpoints including:
 /api/analytics/high-risk-categories
 /api/analytics/amount-bands
 /api/analytics/states
+/api/alerts/count
+/api/data-quality
+/api/settings/thresholds
+/api/investigations/{transaction_id}
 ```
 
 ---
