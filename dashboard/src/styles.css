@@ -33,6 +33,7 @@
   h1,h2,h3 { font-family: var(--font-display); letter-spacing: 0; }
   button,a,[role="button"] { -webkit-tap-highlight-color: transparent; }
 }
+
 @utility app-shell { background: linear-gradient(145deg, oklch(.16 .045 255), oklch(.22 .08 270) 48%, oklch(.18 .055 220)); }
 @utility soft-grid { background-image: linear-gradient(oklch(.55 .18 258 / 5%) 1px, transparent 1px), linear-gradient(90deg, oklch(.55 .18 258 / 5%) 1px, transparent 1px); background-size: 32px 32px; }
 @utility glass-card { background: oklch(1 0 0 / 94%); box-shadow: 0 16px 40px oklch(.18 .045 255 / 10%); backdrop-filter: blur(18px); }

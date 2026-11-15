@@ -4,145 +4,152 @@ import pandas as pd
 # UPI RISK SENSITIVITY ANALYSIS
 # ============================================================
 
-print("\n" + "=" * 70)
-print("              UPI RISK SENSITIVITY ANALYSIS")
-print("=" * 70)
 
-# ------------------------------------------------------------
-# 1. LOAD RISK-SCORED DATA
-# ------------------------------------------------------------
+def main():
 
-input_file = "data/processed/upi_risk_scores.csv"
+    print("\n" + "=" * 70)
+    print("              UPI RISK SENSITIVITY ANALYSIS")
+    print("=" * 70)
 
-df = pd.read_csv(input_file)
+    # ------------------------------------------------------------
+    # 1. LOAD RISK-SCORED DATA
+    # ------------------------------------------------------------
 
-print(f"\nTransactions loaded: {len(df):,}")
+    input_file = "data/processed/upi_risk_scores.csv"
 
+    df = pd.read_csv(input_file)
 
-# ------------------------------------------------------------
-# 2. DEFINE SENSITIVITY LEVELS
-# ------------------------------------------------------------
-
-sensitivity_levels = {
-    "Low": 80,
-    "Medium": 60,
-    "High": 30
-}
+    print(f"\nTransactions loaded: {len(df):,}")
 
 
-# ------------------------------------------------------------
-# 3. ANALYZE EACH SENSITIVITY LEVEL
-# ------------------------------------------------------------
+    # ------------------------------------------------------------
+    # 2. DEFINE SENSITIVITY LEVELS
+    # ------------------------------------------------------------
 
-results = []
-
-print("\n" + "-" * 70)
-print("SENSITIVITY COMPARISON")
-print("-" * 70)
-
-for sensitivity, threshold in sensitivity_levels.items():
-
-    flagged = df[df["risk_score"] >= threshold]
-
-    count = len(flagged)
-
-    percentage = (count / len(df)) * 100
-
-    results.append({
-        "sensitivity": sensitivity,
-        "risk_threshold": threshold,
-        "transactions_flagged": count,
-        "flag_rate_percent": round(percentage, 2)
-    })
-
-    print(
-        f"{sensitivity:10} | "
-        f"Threshold >= {threshold:3} | "
-        f"Flagged: {count:5,} | "
-        f"Rate: {percentage:.2f}%"
-    )
+    sensitivity_levels = {
+        "Low": 80,
+        "Medium": 60,
+        "High": 30
+    }
 
 
-# ------------------------------------------------------------
-# 4. CREATE RESULTS DATAFRAME
-# ------------------------------------------------------------
+    # ------------------------------------------------------------
+    # 3. ANALYZE EACH SENSITIVITY LEVEL
+    # ------------------------------------------------------------
 
-sensitivity_df = pd.DataFrame(results)
-
-
-# ------------------------------------------------------------
-# 5. ADD RISK LEVEL BREAKDOWN
-# ------------------------------------------------------------
-
-for sensitivity, threshold in sensitivity_levels.items():
-
-    flagged = df[df["risk_score"] >= threshold]
+    results = []
 
     print("\n" + "-" * 70)
-    print(f"{sensitivity.upper()} SENSITIVITY")
+    print("SENSITIVITY COMPARISON")
     print("-" * 70)
 
-    if len(flagged) == 0:
-        print("No transactions flagged.")
-        continue
+    for sensitivity, threshold in sensitivity_levels.items():
 
-    breakdown = (
-        flagged["risk_level"]
-        .value_counts()
-        .reindex(
-            ["Low", "Medium", "High", "Critical"],
-            fill_value=0
+        flagged = df[df["risk_score"] >= threshold]
+
+        count = len(flagged)
+
+        percentage = (count / len(df)) * 100
+
+        results.append({
+            "sensitivity": sensitivity,
+            "risk_threshold": threshold,
+            "transactions_flagged": count,
+            "flag_rate_percent": round(percentage, 2)
+        })
+
+        print(
+            f"{sensitivity:10} | "
+            f"Threshold >= {threshold:3} | "
+            f"Flagged: {count:5,} | "
+            f"Rate: {percentage:.2f}%"
         )
-    )
-
-    for level, count in breakdown.items():
-        if count > 0:
-            print(f"{level:10}: {count:,}")
 
 
-# ------------------------------------------------------------
-# 6. SAVE SUMMARY
-# ------------------------------------------------------------
+    # ------------------------------------------------------------
+    # 4. CREATE RESULTS DATAFRAME
+    # ------------------------------------------------------------
 
-output_file = "data/processed/upi_sensitivity_analysis.csv"
-
-sensitivity_df.to_csv(
-    output_file,
-    index=False
-)
+    sensitivity_df = pd.DataFrame(results)
 
 
-# ------------------------------------------------------------
-# 7. SAVE FLAGGED TRANSACTIONS FOR EACH LEVEL
-# ------------------------------------------------------------
+    # ------------------------------------------------------------
+    # 5. ADD RISK LEVEL BREAKDOWN
+    # ------------------------------------------------------------
 
-for sensitivity, threshold in sensitivity_levels.items():
+    for sensitivity, threshold in sensitivity_levels.items():
 
-    flagged = df[df["risk_score"] >= threshold].copy()
+        flagged = df[df["risk_score"] >= threshold]
 
-    filename = (
-        f"data/processed/"
-        f"upi_{sensitivity.lower()}_sensitivity.csv"
-    )
+        print("\n" + "-" * 70)
+        print(f"{sensitivity.upper()} SENSITIVITY")
+        print("-" * 70)
 
-    flagged.to_csv(
-        filename,
+        if len(flagged) == 0:
+            print("No transactions flagged.")
+            continue
+
+        breakdown = (
+            flagged["risk_level"]
+            .value_counts()
+            .reindex(
+                ["Low", "Medium", "High", "Critical"],
+                fill_value=0
+            )
+        )
+
+        for level, count in breakdown.items():
+            if count > 0:
+                print(f"{level:10}: {count:,}")
+
+
+    # ------------------------------------------------------------
+    # 6. SAVE SUMMARY
+    # ------------------------------------------------------------
+
+    output_file = "data/processed/upi_sensitivity_analysis.csv"
+
+    sensitivity_df.to_csv(
+        output_file,
         index=False
     )
 
 
-# ------------------------------------------------------------
-# 8. FINAL OUTPUT
-# ------------------------------------------------------------
+    # ------------------------------------------------------------
+    # 7. SAVE FLAGGED TRANSACTIONS FOR EACH LEVEL
+    # ------------------------------------------------------------
 
-print("\n" + "=" * 70)
-print("SENSITIVITY ANALYSIS COMPLETED")
-print("=" * 70)
+    for sensitivity, threshold in sensitivity_levels.items():
 
-print("\nSummary saved to:")
-print(output_file)
+        flagged = df[df["risk_score"] >= threshold].copy()
 
-print("\nDetailed transaction files saved:")
-print("data/processed/upi_low_sensitivity.csv")
-print("data/processed/upi_medium_sensitivity.csv")
-print("data/processed/upi_high_sensitivity.csv")
+        filename = (
+            f"data/processed/"
+            f"upi_{sensitivity.lower()}_sensitivity.csv"
+        )
+
+        flagged.to_csv(
+            filename,
+            index=False
+        )
+
+
+    # ------------------------------------------------------------
+    # 8. FINAL OUTPUT
+    # ------------------------------------------------------------
+
+    print("\n" + "=" * 70)
+    print("SENSITIVITY ANALYSIS COMPLETED")
+    print("=" * 70)
+
+    print("\nSummary saved to:")
+    print(output_file)
+
+    print("\nDetailed transaction files saved:")
+    print("data/processed/upi_low_sensitivity.csv")
+    print("data/processed/upi_medium_sensitivity.csv")
+    print("data/processed/upi_high_sensitivity.csv")
+
+
+if __name__ == "__main__":
+    main()

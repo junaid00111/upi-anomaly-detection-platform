@@ -17,10 +17,6 @@ export function PageHeader({
   return (
     <div className="mb-6 grid grid-cols-[minmax(0,1fr)_auto] items-end gap-4">
       <div className="min-w-0">
-        <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase text-primary">
-          <span className="h-px w-5 bg-primary" />
-          UPI anomaly monitoring
-        </div>
         <h1 className="text-2xl font-bold text-foreground sm:text-3xl">{title}</h1>
         <p className="mt-1 max-w-3xl text-sm text-muted-foreground">{description}</p>
       </div>
@@ -59,10 +55,10 @@ export function MetricCard({
     critical: "bg-critical/10 text-critical",
   };
   return (
-    <Card className="glass-card overflow-hidden rounded-lg border-border/70 transition-transform hover:-translate-y-0.5">
+    <Card className="glass-card group relative overflow-hidden rounded-xl border-border/70 transition-all duration-200 hover:-translate-y-1 hover:border-primary/25 hover:shadow-lg hover:shadow-primary/5">
       <CardContent className="p-5">
         <div className="flex items-start justify-between">
-          <div className={cn("grid size-10 place-items-center rounded-md", tones[tone])}>
+          <div className={cn("grid size-10 place-items-center rounded-xl transition-transform duration-200 group-hover:scale-105", tones[tone])}>
             <Icon className="size-5" />
           </div>
           <Tooltip>
