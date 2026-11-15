@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from sklearn.ensemble import IsolationForest
+from sklearn.preprocessing import StandardScaler
 
 
 def create_behavioral_features(df):
@@ -98,6 +99,11 @@ def detect_isolation_forest(df):
         "receiver_previous_average"
     ]
 
+    # Scale features so that high-magnitude columns (amount_inr)
+    # do not dominate low-magnitude ones (hour, day_of_week).
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(df[features])
+
     # Create model
     model = IsolationForest(
         n_estimators=200,
@@ -106,7 +112,7 @@ def detect_isolation_forest(df):
     )
 
     # Train and predict
-    predictions = model.fit_predict(df[features])
+    predictions = model.fit_predict(X_scaled)
 
     # Convert:
     # -1 = anomaly
@@ -117,7 +123,7 @@ def detect_isolation_forest(df):
 
     # Anomaly score
     df["isolation_forest_score"] = (
-        model.decision_function(df[features])
+        model.decision_function(X_scaled)
     )
 
     print("\n--- Isolation Forest ---")

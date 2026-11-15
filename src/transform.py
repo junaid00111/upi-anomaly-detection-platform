@@ -56,6 +56,11 @@ def transform_data(df):
     # -----------------------------
     # 7. Sender transaction history
     # -----------------------------
+    # NOTE: These are global (whole-dataset) statistics used for EDA
+    # and profiling only. They are NOT used as ML model features.
+    # The ML modules (isolation_forest.py, ml_models.py) correctly
+    # compute historical-only features using cumcount/expanding/shift
+    # to avoid data leakage.
     df["sender_transaction_count"] = (
         df.groupby("sender_upi_id")["transaction_id"]
         .transform("count")

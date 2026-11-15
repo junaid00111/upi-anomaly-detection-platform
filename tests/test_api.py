@@ -4,10 +4,8 @@ The database is mocked out so the tests can run on any machine
 without a live PostgreSQL instance. ``api.main.get_connection`` is
 patched to return a fake connection whose cursor returns scripted rows.
 """
-
-import pytest
-from fastapi.testclient import TestClient
-
+import pytest  # type: ignore[import-not-found]
+from fastapi.testclient import TestClient # type: ignore[import-not-found]
 from api.main import app
 
 client = TestClient(app)
@@ -26,11 +24,11 @@ class FakeCursor:
         self.executed_params = params
 
     def fetchone(self):
-        step = self.script.pop(0) if self.script else lambda: None
+        step = self.script.pop(0) if self.script else lambda cursor: None
         return step(self)
 
     def fetchall(self):
-        step = self.script.pop(0) if self.script else lambda: []
+        step = self.script.pop(0) if self.script else lambda cursor: []
         return step(self)
 
     def close(self):

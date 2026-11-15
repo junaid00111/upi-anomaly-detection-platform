@@ -1,0 +1,19 @@
+{
+  "typeCheckingMode": "basic",
+  "reportOptionalSubscript": "none",
+  "reportOptionalMemberAccess": "none",
+  "reportAttributeAccessIssue": "none",
+  "reportArgumentType": "none",
+  "reportCallIssue": "none",
+  "reportOperatorIssue": "none",
+  "reportIndexIssue": "none",
+  "reportAssignmentType": "none",
+  "reportGeneralTypeIssues": "none",
+  "exclude": [
+    "data",
+    "docs",
+    "node_modules",
+    "dist",
+    "venv"
+  ]
+}

@@ -98,11 +98,18 @@ def generate_upi_data(num_records=10000, output_file="upi.csv"):
     time_span_seconds = int((end_date - start_date).total_seconds())
 
     rows = []
+    used_ids = set()
 
     for i in range(num_records):
-        txn_id = f"UPI{datetime.now().strftime('%Y%m')}{random.randint(1000000000, 9999999999)}"
         random_seconds = random.randint(0, time_span_seconds)
         txn_time = start_date + timedelta(seconds=random_seconds)
+
+        # Generate a unique transaction ID using the simulated timestamp
+        while True:
+            txn_id = f"UPI{txn_time.strftime('%Y%m')}{random.randint(1000000000, 9999999999)}"
+            if txn_id not in used_ids:
+                used_ids.add(txn_id)
+                break
 
         sender = random.choice(user_pool)
 

@@ -25,3 +25,6 @@ dashboard/.tanstack/
 .idea/
 .DS_Store
 Thumbs.db
+
+.impeccable
+.claude

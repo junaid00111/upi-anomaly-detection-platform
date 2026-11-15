@@ -1,6 +1,4 @@
 import pandas as pd
-import numpy as np
-from sklearn.ensemble import IsolationForest
 
 
 def detect_iqr_anomalies(df):
@@ -21,7 +19,7 @@ def detect_iqr_anomalies(df):
     df["iqr_anomaly"] = (
         (df["amount_inr"] < lower_bound) |
         (df["amount_inr"] > upper_bound)
-    )
+    ).astype(int)
 
     print("\n--- IQR Anomaly Detection ---")
     print(f"Q1: {Q1:.2f}")
