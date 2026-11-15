@@ -90,7 +90,7 @@ def _get_pool() -> psycopg2.pool.ThreadedConnectionPool:
     if _pool is None or _pool.closed:
         _pool = psycopg2.pool.ThreadedConnectionPool(
             minconn=2,
-            maxconn=10,
+            maxconn=20,
             host=os.getenv("DB_HOST"),
             port=os.getenv("DB_PORT"),
             database=os.getenv("DB_NAME"),
