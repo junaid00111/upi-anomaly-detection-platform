@@ -455,9 +455,9 @@ The FastAPI backend provides endpoints including:
 ---
 Creates a backup of the existing transactions
 1. Copy-Item data\raw\upi.csv data\raw\upi_10k_backup.csv -Force
-Generates the new transactions
+## Generates the new transactions
 2. python -c "from generate_upi_data import generate_upi_data; generate_upi_data(10000, 'data/raw/upi_extra.csv')"
-Combines the New and OLD transactions
+## Combines the New and OLD transactions
 3. python -c "import pandas as pd; old=pd.read_csv('data/raw/upi.csv'); extra=pd.read_csv('data/raw/upi_extra.csv'); combined=pd.concat([old,extra], ignore_index=True).drop_duplicates(subset=['transaction_id']); combined.to_csv('data/raw/upi.csv', index=False); print(f'Total raw transactions: {len(combined):,}')"
 ---
 
